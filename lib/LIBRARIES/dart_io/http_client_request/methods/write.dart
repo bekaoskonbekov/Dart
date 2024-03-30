@@ -1,0 +1,56 @@
+// import 'dart:convert';
+// import 'dart:io';
+
+// void main(List<String> args) async {
+//   var client = HttpClient();
+//   var request = await client
+//       .postUrl(Uri.parse('https://jsonplaceholder.typicode.com/posts'));
+//   request.write(json.encode({
+//     'userId': 1,
+//     'title': 'Sample Title',
+//     'body': 'This is a sample body.'
+//   }));
+//   try {
+//     var response = await request.close();
+//     var responseBody = await response.transform(utf8.decoder).join();
+
+//     print('Response status code: ${response.statusCode}');
+//     print('Response body: $responseBody');
+//   } catch (e) {
+//     print("Error: $e");
+//   }
+// }
+
+import 'dart:convert';
+import 'dart:io';
+
+void main() async {
+  var client = HttpClient();
+  var request = await client
+      .postUrl(Uri.parse('https://jsonplaceholder.typicode.com/posts'));
+
+  // Write multiple data chunks to the request body
+  request.write(json.encode({
+    'userId': 1,
+    'title': 'Sample Title',
+    'body': 'This is a sample body.'
+  }));
+  request.write('\n'); // Add a newline separator
+  request.write(json.encode({
+    'userId': 2,
+    'title': 'Another Title',
+    'body': 'This is another sample body.'
+  }));
+
+  try {
+    var response = await request.close();
+    var responseBody = await response.transform(utf8.decoder).join();
+
+    print('Response status code: ${response.statusCode}');
+    print('Response body: $responseBody');
+  } catch (e) {
+    print('Error occurred: $e');
+  } finally {
+    client.close();
+  }
+}
